@@ -14,12 +14,13 @@ public class Test extends JApplet {
 	public JPanel panel;
 	
 	public static void main(String[] args) {
-		init(args);
+		Test test = new Test();
+		test.setVisible(true);
 	}
 	
 	public static void init(String[] args) {
-			Test test = new Test();
-			test.setVisible(true);
+			//Test test = new Test();
+			//test.setVisible(true);
 	}
 	
 	public Test() {
