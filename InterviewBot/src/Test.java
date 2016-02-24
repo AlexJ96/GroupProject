@@ -19,8 +19,6 @@ public class Test extends JApplet {
 	}
 	
 	public static void init(String[] args) {
-			//Test test = new Test();
-			//test.setVisible(true);
 	}
 	
 	public Test() {
