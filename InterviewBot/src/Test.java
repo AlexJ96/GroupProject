@@ -3,6 +3,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,7 +18,10 @@ public class Test extends JApplet {
 	public JPanel panel;
 	private JLabel title, availableCandidates, userOneName, userTwoName, userThreeName, instructions, instructionOne, instructionTwo, instructionThree;
 	private JButton userOne, userTwo, userThree;
+	private JTextArea messageField;
 	
+	private HashMap<String, String> test = new HashMap<String, String>();
+	private String[] words = { "about", "yourself", "your", "experiences", "life"};
 	
 	public static void main(String[] args) {
 		Test test = new Test();
@@ -23,10 +29,14 @@ public class Test extends JApplet {
 	}
 	
 	public static void init(String[] args) {
+		
 	}
 	
 	public Test() {
-		
+		test.put("aboutyourself", "Answer 1");
+		test.put("aboutyourexperiences", "Answer 2");
+		test.put("aboutyourlifeexperiences", "Answer 3");
+	
 		panel = new JPanel();
 		
 		title = new JLabel("<HTML><U>Live Interview Chat</U></HTML>");
@@ -108,23 +118,23 @@ public class Test extends JApplet {
 	}
 	
 	private void initChat(String interviewee) {
-//		title.setVisible(false);
-//		availableCandidates.setVisible(false);
-//		userOne.setVisible(false);
-//		userTwo.setVisible(false);
-//		userThree.setVisible(false);
-//		userOneName.setVisible(false);
-//		userTwoName.setVisible(false);
-//		userThreeName.setVisible(false);
-//		instructions.setVisible(false);
-//		instructionOne.setVisible(false);
-//		instructionTwo.setVisible(false);
-//		instructionThree.setVisible(false);
+		title.setVisible(false);
+		availableCandidates.setVisible(false);
+		userOne.setVisible(false);
+		userTwo.setVisible(false);
+		userThree.setVisible(false);
+		userOneName.setVisible(false);
+		userTwoName.setVisible(false);
+		userThreeName.setVisible(false);
+		instructions.setVisible(false);
+		instructionOne.setVisible(false);
+		instructionTwo.setVisible(false);
+		instructionThree.setVisible(false);
 		
 		JTextArea textField = new JTextArea();
 		textField.setEditable(true);
 		
-		JTextArea messageField = new JTextArea();
+		messageField = new JTextArea();
 		messageField.setEditable(true);
 		messageField.setBounds(20, 340, 455, 40);
 		
@@ -136,6 +146,15 @@ public class Test extends JApplet {
 	    
 	    JButton send = new JButton("Send");
 	    send.setBounds(480, 361, 40, 20);
+	    
+	    
+	    send.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg) {
+				test();
+				messageField.setText("");
+			}
+		});
     
 	    
 		getContentPane().add(scroll);
@@ -147,8 +166,24 @@ public class Test extends JApplet {
 	    validate();
 	    repaint();
 	    setVisible(true);
-	    
-	  
+	   
+	}
+	
+	private void test() {
+		String question = messageField.getText();
+		String keywords = "";
+		for (String keyword : question.split(" ")) {
+			for (String key_words : words) {
+				if (keyword.equalsIgnoreCase(key_words)) {
+					keywords += keyword;
+				}
+			}
+		}
+		if (test.containsKey(keywords)) {
+			System.out.println(test.get(keywords));
+		} else {
+			System.out.println("Sorry I don't understand..");
+		}
 	}
 	
 }
