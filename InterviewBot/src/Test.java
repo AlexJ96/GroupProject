@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 
+import utils.DataReader;
+
 @SuppressWarnings("unused")
 public class Test extends JApplet {
 	
@@ -20,23 +22,17 @@ public class Test extends JApplet {
 	private JButton userOne, userTwo, userThree;
 	private JTextArea messageField;
 	
-	private HashMap<String, String> test = new HashMap<String, String>();
+	private static HashMap<String, String> data = new HashMap<String, String>();
 	private String[] words = { "about", "yourself", "your", "experiences", "life"};
 	
 	public static void main(String[] args) {
-		Test test = new Test();
-		test.setVisible(true);
 	}
 	
 	public static void init(String[] args) {
-		
+		data = DataReader.init(); 
 	}
 	
 	public Test() {
-		test.put("aboutyourself", "Answer 1");
-		test.put("aboutyourexperiences", "Answer 2");
-		test.put("aboutyourlifeexperiences", "Answer 3");
-	
 		panel = new JPanel();
 		
 		title = new JLabel("<HTML><U>Live Interview Chat</U></HTML>");
@@ -114,6 +110,8 @@ public class Test extends JApplet {
 			}
 		});
 	    
+
+		data = DataReader.init();
 		setVisible(true);
 	}
 	
@@ -179,9 +177,11 @@ public class Test extends JApplet {
 				}
 			}
 		}
-		if (test.containsKey(keywords)) {
-			System.out.println(test.get(keywords));
+		if (data.containsKey(keywords)) {
+			System.out.println(keywords);
+			System.out.println(data.get(keywords));
 		} else {
+			System.out.println(keywords);
 			System.out.println("Sorry I don't understand..");
 		}
 	}
