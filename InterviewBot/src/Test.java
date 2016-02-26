@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import utils.DataReader;
+import utils.KeywordReader;
 
 @SuppressWarnings("unused")
 public class Test extends JApplet {
@@ -23,13 +24,12 @@ public class Test extends JApplet {
 	private JTextArea messageField;
 	
 	private static HashMap<String, String> data = new HashMap<String, String>();
-	private String[] words = { "about", "yourself", "your", "experiences", "life"};
+	private static ArrayList<String> keywords = new ArrayList<String>();
 	
 	public static void main(String[] args) {
 	}
 	
 	public static void init(String[] args) {
-		data = DataReader.init(); 
 	}
 	
 	public Test() {
@@ -112,6 +112,7 @@ public class Test extends JApplet {
 	    
 
 		data = DataReader.init();
+		keywords = KeywordReader.init();
 		setVisible(true);
 	}
 	
@@ -169,19 +170,19 @@ public class Test extends JApplet {
 	
 	private void test() {
 		String question = messageField.getText();
-		String keywords = "";
+		String phrase = "";
 		for (String keyword : question.split(" ")) {
-			for (String key_words : words) {
+			for (String key_words : keywords) {
 				if (keyword.equalsIgnoreCase(key_words)) {
-					keywords += keyword;
+					phrase += keyword;
 				}
 			}
 		}
-		if (data.containsKey(keywords)) {
-			System.out.println(keywords);
-			System.out.println(data.get(keywords));
+		if (data.containsKey(phrase)) {
+			System.out.println(phrase);
+			System.out.println(data.get(phrase));
 		} else {
-			System.out.println(keywords);
+			System.out.println(phrase);
 			System.out.println("Sorry I don't understand..");
 		}
 	}

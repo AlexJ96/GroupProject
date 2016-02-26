@@ -10,13 +10,12 @@ public class DataReader {
 	private static String fileDirectory = "../data/data.txt";
 	
 	public static HashMap<String, String> init() {
-		System.out.println("Initilising data..");
+		System.out.println("Reading data..");
 		HashMap<String, String> data = new HashMap<String, String>();
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(fileDirectory));
 			while (true) {
 				String line = br.readLine();
-				System.out.println("test");
 				if (line == null) {
 					br.close();
 					return data;
