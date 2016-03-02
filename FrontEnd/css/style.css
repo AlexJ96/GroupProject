@@ -1,0 +1,53 @@
+﻿/*
+*Name: Interview Chat App
+*Date: March 2016
+*Description: CSS for interview chat app web page
+*Version: 1.0
+*Author: Daniel Martin
+*/
+
+/* CSS basic Reset */
+* {
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+}
+
+body {
+	margin:0 auto;
+	max-width:940px;
+	font:13px/22px Helveltica, Arial, "sans-serif";
+	background:#222222;
+}
+
+div {
+	margin:0 auto;
+}
+
+footer {
+	position:relative;
+	color:#FFFFFF;
+	background-color:#000000;
+	padding:10px;
+	text-align:center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
