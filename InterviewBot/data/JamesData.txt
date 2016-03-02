@@ -1,0 +1,22 @@
+howjourney - The journey was alright.
+journeyin - The journey was alright.
+usedproducts - Yes.
+usedproduct - Yes.
+useproducts - Yes.
+useproduct - Yes.
+thinkproduct - I like the product a lot.
+companyimprove - Yes, it could expand its customer base more globaly.
+jobbefore - Yes, i've worked in a warehouse. My job was to audit so i am very organised.
+deserveopportunity - Because i am well suited to the role and i have always wanted to work in the industry.
+distinguishes - I am hardworking and organised due to the job i held down before. I am punctual and i am passionate about the industry.
+consideredposition - I am hardworking and organised due to the job i held down before. I am punctual and i am passionate about the industry.
+liketypeinterview - Yes, it's fine.
+arecomputer - No.
+areperson - Yes.
+anyquestions - No.
+anyhobbies - Gaming, Anime and Reading.
+activitiesfreetime - Gaming, Anime and Reading.
+competentITskills - The most, it is what i live for.
+alwayswantworkindustry - Yes.
+backgroundanythingusefulposition - Yes, i used database software and mathematics in my previous occupation.
+thinkturingtest - err... i don't have any real opinion of it.
