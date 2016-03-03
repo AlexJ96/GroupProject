@@ -1,32 +1,61 @@
-import java.applet.Applet;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.border.Border;
+import javax.swing.ImageIcon;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-import utils.DataReader;
-import utils.KeywordReader;
+import design.GhostText;
 
-@SuppressWarnings("unused")
+/**
+ * Images link: http://www.flaticon.com/free-icon/right-arrow_8767
+ * @author Alex
+ *
+ */
+
 public class Test extends JApplet {
-	
+		
 	public static final long serialVersionUID = -2803431175048406077L;
 	public JPanel panel;
-	private JLabel title, availableCandidates, userOneName, userTwoName, userThreeName, instructions, instructionOne, instructionTwo, instructionThree;
-	private JButton userOne, userTwo, userThree;
-	private JTextArea messageField;
+	
+	/**
+	 * LOGIN MENU
+	 */
+	private JTextField username; 
+	private JPasswordField password; 
+	private JButton login, passwordButton; 
+	private JCheckBox remember; 
+	private JLabel checkMessage;
+	
+	
+	/**
+	 * IntervieweeMenu
+	 */
+	private JLabel interviewees, intervieweeOneName, intervieweeOneInfo,
+	intervieweeTwoName, intervieweeTwoInfo, intervieweeThreeName, intervieweeThreeInfo,
+	intervieweeFourName, intervieweeFourInfo;
+	
+	private JButton intervieweeOneButton, intervieweeTwoButton, intervieweeThreeButton, intervieweeFourButton;
+	
 	
 	private static HashMap<String, String> data = new HashMap<String, String>();
 	private static ArrayList<String> keywords = new ArrayList<String>();
-	
+		
 	public static void main(String[] args) {
+		Test test = new Test();
 	}
 	
 	public static void init(String[] args) {
@@ -34,157 +63,242 @@ public class Test extends JApplet {
 	
 	public Test() {
 		panel = new JPanel();
+		setContentPane(new JLabel(new ImageIcon("../images/login/loginBackground.png")));
 		
-		title = new JLabel("<HTML><U>Live Interview Chat</U></HTML>");
-		title.setBounds(20, 20, 120, 20);
 		
-		availableCandidates = new JLabel("Available Candidates:");
-		availableCandidates.setBounds(60, 40, 180, 20);
+		final JTextArea textArea = new JTextArea();
+		textArea.setEditable(false);
+		textArea.setOpaque(false);
+		textArea.setWrapStyleWord(true);
+		textArea.setLineWrap(true);
 		
-		userOne = new JButton();
-		userOne.setBounds(60, 60, 130, 130);
-		userOne.setIcon(new ImageIcon("../images/blank-user.jpg"));
-		
-		userTwo = new JButton();
-		userTwo.setBounds(190, 60, 130, 130);
-		userTwo.setIcon(new ImageIcon("../images/blank-user.jpg"));
-		
-		userTwo.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg) {
-				initChat("userOne");
-			}
-		});
-		
-		userThree = new JButton();
-		userThree.setBounds(320, 60, 130, 130);
-		userThree.setIcon(new ImageIcon("../images/blank-user.jpg"));
-		
-		userThree.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg) {
-				initChat("userOne");
-			}
-		});
-		
-		userOneName = new JLabel("NAME");
-		userOneName.setBounds(105, 185, 40, 20);
-		
-		userTwoName = new JLabel("NAME");
-		userTwoName.setBounds(235, 185, 40, 20);
-		
-		userThreeName = new JLabel("NAME");
-		userThreeName.setBounds(365, 185, 40, 20);
-		
-		instructions = new JLabel("<HTML><U>Instructions</U></HTML>");
-		instructions.setBounds(20, 280, 100, 20);
-		
-		instructionOne = new JLabel("1. Select an Interviewee");
-		instructionOne.setBounds(40, 310, 150, 20);
-		
-		instructionTwo = new JLabel("2. Type your question");
-		instructionTwo.setBounds(40, 340, 140, 20);
-		
-		instructionThree = new JLabel("3. Read the response or click the speaker symbol to hear the interviewee's response to your question");
-		instructionThree.setBounds(40, 370, 700, 20);
-		
-		getContentPane().add(userThreeName);
-		getContentPane().add(userTwoName);
-		getContentPane().add(userOneName);
-		getContentPane().add(userThree);
-		getContentPane().add(userTwo);
-		getContentPane().add(userOne);
-		getContentPane().add(instructionThree);
-		getContentPane().add(instructionTwo);
-		getContentPane().add(instructionOne);
-		getContentPane().add(instructions);
-		getContentPane().add(availableCandidates);
-		getContentPane().add(title);
-	    getContentPane().add(panel);
+		JScrollPane scroll = new JScrollPane(textArea);
+	    scroll.setBounds(40, 45, 245, 310);
+	    scroll.setOpaque(false);
+	    scroll.getViewport().setOpaque(false);
+	    scroll.setBorder(null);
+	    scroll.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+	    textArea.setForeground(Color.WHITE);
 	    
-	    userOne.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg) {
-				initChat("userOne");
-				System.out.println("User 1 clicked");
-			}
-		});
-	    
+	    loadLogin();
+	    loadListeners();
+	    addLoginContentToPane();
+	}
+	
+	private void loadIntervieweeMenu() {
+		setContentPane(new JLabel(new ImageIcon("../images/login/intervieweeMenu.png")));
+		getContentPane().revalidate();
+		getContentPane().repaint();
+		
+		interviewees = new JLabel("INTERVIEWEES");
+		interviewees.setBounds(100, 13, 150, 20);
+		interviewees.setFont(new Font(interviewees.getFont().getName(), interviewees.getFont().getStyle(), 20));
+		interviewees.setForeground(Color.LIGHT_GRAY);
+		
+		
+		/**
+		 * Interviewee One
+		 */
+		intervieweeOneName = new JLabel("Interviewee Name");
+		intervieweeOneName.setBounds(100, 80, 150, 20);
+		intervieweeOneName.setFont(new Font(intervieweeOneName.getFont().getName(), intervieweeOneName.getFont().getStyle(), 16));
+		intervieweeOneName.setForeground(Color.LIGHT_GRAY);
+		intervieweeOneName.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
+		intervieweeOneInfo = new JLabel("Interviewee Information");
+		intervieweeOneInfo.setBounds(100, 100, 150, 20);
+		intervieweeOneInfo.setForeground(Color.LIGHT_GRAY);
+		intervieweeOneInfo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
+		intervieweeOneButton = new JButton();
+		intervieweeOneButton.setIcon(new ImageIcon("../images/login/intervieweeOneButton.png"));
+		intervieweeOneButton.setBounds(0, 52, 320, 95);
+		intervieweeOneButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		intervieweeOneButton.addMouseListener(new java.awt.event.MouseAdapter() {
+		    public void mouseEntered(java.awt.event.MouseEvent evt) {
+		    	intervieweeOneButton.setIcon(new ImageIcon("../images/login/intervieweeButtonOnePressed.png"));
+		    }
 
-		data = DataReader.init();
-		keywords = KeywordReader.init();
-		setVisible(true);
+		    public void mouseExited(java.awt.event.MouseEvent evt) {
+		    	intervieweeOneButton.setIcon(new ImageIcon("../images/login/intervieweeOneButton.png"));
+		    }
+		});
+		
+		
+		/**
+		 * Interviewee Two
+		 */
+		intervieweeTwoName = new JLabel("Interviewee Name");
+		intervieweeTwoName.setBounds(100, 175, 150, 20);
+		intervieweeTwoName.setFont(new Font(intervieweeTwoName.getFont().getName(), intervieweeTwoName.getFont().getStyle(), 16));
+		intervieweeTwoName.setForeground(Color.LIGHT_GRAY);
+		intervieweeTwoName.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
+		intervieweeTwoInfo = new JLabel("Interviewee Information");
+		intervieweeTwoInfo.setBounds(100, 195, 150, 20);
+		intervieweeTwoInfo.setForeground(Color.LIGHT_GRAY);
+		intervieweeTwoInfo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
+		intervieweeTwoButton = new JButton();
+		intervieweeTwoButton.setIcon(new ImageIcon("../images/login/intervieweeButtonTwo.png"));
+		intervieweeTwoButton.setBounds(0, 148, 320, 95);
+		intervieweeTwoButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		intervieweeTwoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+		    public void mouseEntered(java.awt.event.MouseEvent evt) {
+		    	intervieweeTwoButton.setIcon(new ImageIcon("../images/login/intervieweeButtonTwoPressed.png"));
+		    }
+
+		    public void mouseExited(java.awt.event.MouseEvent evt) {
+		    	intervieweeTwoButton.setIcon(new ImageIcon("../images/login/intervieweeButtonTwo.png"));
+		    }
+		});
+		
+		/**
+		 * Interviewee Three
+		 */
+		intervieweeThreeName = new JLabel("Interviewee Name");
+		intervieweeThreeName.setBounds(100, 275, 150, 20);
+		intervieweeThreeName.setFont(new Font(intervieweeThreeName.getFont().getName(), intervieweeThreeName.getFont().getStyle(), 16));
+		intervieweeThreeName.setForeground(Color.LIGHT_GRAY);
+		intervieweeThreeName.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
+		intervieweeThreeInfo = new JLabel("Interviewee Information");
+		intervieweeThreeInfo.setBounds(100, 295, 150, 20);
+		intervieweeThreeInfo.setForeground(Color.LIGHT_GRAY);
+		intervieweeThreeInfo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
+		intervieweeThreeButton = new JButton();
+		intervieweeThreeButton.setIcon(new ImageIcon("../images/login/intervieweeButtonThree.png"));
+		intervieweeThreeButton.setBounds(0, 245, 320, 95);
+		intervieweeThreeButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		intervieweeThreeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+		    public void mouseEntered(java.awt.event.MouseEvent evt) {
+		    	intervieweeThreeButton.setIcon(new ImageIcon("../images/login/intervieweeButtonThreePressed.png"));
+		    }
+
+		    public void mouseExited(java.awt.event.MouseEvent evt) {
+		    	intervieweeThreeButton.setIcon(new ImageIcon("../images/login/intervieweeButtonThree.png"));
+		    }
+		});
+		
+		
+		/**
+		 * Interviewee Four
+		 */
+		intervieweeFourName = new JLabel("Interviewee Name");
+		intervieweeFourName.setBounds(100, 370, 150, 20);
+		intervieweeFourName.setFont(new Font(intervieweeFourName.getFont().getName(), intervieweeFourName.getFont().getStyle(), 16));
+		intervieweeFourName.setForeground(Color.LIGHT_GRAY);
+		intervieweeFourName.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
+		intervieweeFourInfo = new JLabel("Interviewee Information");
+		intervieweeFourInfo.setBounds(100, 390, 150, 20);
+		intervieweeFourInfo.setForeground(Color.LIGHT_GRAY);
+		intervieweeFourInfo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
+		intervieweeFourButton = new JButton();
+		intervieweeFourButton.setIcon(new ImageIcon("../images/login/intervieweeButtonFour.png"));
+		intervieweeFourButton.setBounds(0, 342, 320, 95);
+		intervieweeFourButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		intervieweeFourButton.addMouseListener(new java.awt.event.MouseAdapter() {
+		    public void mouseEntered(java.awt.event.MouseEvent evt) {
+		    	intervieweeFourButton.setIcon(new ImageIcon("../images/login/intervieweeButtonFourPressed.png"));
+		    }
+
+		    public void mouseExited(java.awt.event.MouseEvent evt) {
+		    	intervieweeFourButton.setIcon(new ImageIcon("../images/login/intervieweeButtonFour.png"));
+		    }
+		});
+		
+		addIntervieweeContentToPane();
 	}
 	
-	private void initChat(String interviewee) {
-		title.setVisible(false);
-		availableCandidates.setVisible(false);
-		userOne.setVisible(false);
-		userTwo.setVisible(false);
-		userThree.setVisible(false);
-		userOneName.setVisible(false);
-		userTwoName.setVisible(false);
-		userThreeName.setVisible(false);
-		instructions.setVisible(false);
-		instructionOne.setVisible(false);
-		instructionTwo.setVisible(false);
-		instructionThree.setVisible(false);
+	
+	private void loadLogin() {
+		username = new JTextField();
+		username.setForeground(Color.LIGHT_GRAY);
+		username.setCaretColor(Color.LIGHT_GRAY);
+		GhostText usernameGhost = new GhostText(username, "Username");
+		username.setBounds(110, 272, 130, 25);
+		username.setOpaque(false);
+		username.setBorder(null);
 		
-		JTextArea textField = new JTextArea();
-		textField.setEditable(true);
+		password = new JPasswordField();
+		password.setForeground(Color.LIGHT_GRAY);
+		password.setCaretColor(Color.LIGHT_GRAY);
+		GhostText passwordGhost = new GhostText(password, "Password");
+		password.setBounds(110, 312, 130, 25);
+		password.setOpaque(false);
+		password.setBorder(null);
 		
-		messageField = new JTextArea();
-		messageField.setEditable(true);
-		messageField.setBounds(20, 340, 455, 40);
+		remember = new JCheckBox();
+		remember.setBounds(106, 352, 24, 24);
+		remember.setIcon(new ImageIcon("../images/login/checkbox.png"));
+		remember.setSelectedIcon(new ImageIcon("../images/login/checkboxSelected.png"));
+		remember.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		
-		JScrollPane scroll = new JScrollPane(textField);
-	    scroll.setBounds(20, 20, 500, 300);
-	    
-	    JButton clear = new JButton("Clear");
-	    clear.setBounds(480, 340, 40, 20);
-	    
-	    JButton send = new JButton("Send");
-	    send.setBounds(480, 361, 40, 20);
-	    
-	    
-	    send.addActionListener(new ActionListener() {
+		checkMessage = new JLabel("Remember me");
+		checkMessage.setBounds(135, 354, 100, 20);
+		checkMessage.setForeground(Color.LIGHT_GRAY);
+		
+		login = new JButton();
+		login.setBounds(63, 408, 195, 47);
+		login.setIcon(new ImageIcon("../images/login/login.png"));
+		login.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		login.addMouseListener(new java.awt.event.MouseAdapter() {
+		    public void mouseEntered(java.awt.event.MouseEvent evt) {
+		        login.setIcon(new ImageIcon("../images/login/loginhover.png"));
+		    }
+
+		    public void mouseExited(java.awt.event.MouseEvent evt) {
+		    	login.setIcon(new ImageIcon("../images/login/login.png"));
+		    }
+		});
+		
+		passwordButton = new JButton("Forgot your password?");
+		passwordButton.setForeground(Color.LIGHT_GRAY);
+		passwordButton.setBounds(85, 380, 150, 20);
+		passwordButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		passwordButton.setBorder(null);
+	}
+	
+	private void loadListeners() {
+		login.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg) {
-				test();
-				messageField.setText("");
+			public void actionPerformed(ActionEvent e) {
+				loadIntervieweeMenu();
 			}
 		});
-    
-	    
-		getContentPane().add(scroll);
-	    getContentPane().add(clear);
-	    getContentPane().add(send);
-	    getContentPane().add(messageField);
-	    getContentPane().add(panel);
-	    
-	    validate();
-	    repaint();
-	    setVisible(true);
-	   
 	}
 	
-	private void test() {
-		String question = messageField.getText();
-		String phrase = "";
-		for (String keyword : question.split(" ")) {
-			for (String key_words : keywords) {
-				if (keyword.equalsIgnoreCase(key_words)) {
-					phrase += keyword;
-				}
-			}
-		}
-		if (data.containsKey(phrase)) {
-			System.out.println(phrase);
-			System.out.println(data.get(phrase));
-		} else {
-			System.out.println(phrase);
-			System.out.println("Sorry I don't understand..");
-		}
+	private void addLoginContentToPane() {
+		getContentPane().add(password);
+		getContentPane().add(username);
+		getContentPane().add(remember);
+		getContentPane().add(checkMessage);
+		getContentPane().add(passwordButton);
+		getContentPane().add(login);
+		getContentPane().add(panel);
 	}
 	
+	private void addIntervieweeContentToPane() {
+		getContentPane().add(interviewees);
+
+		getContentPane().add(intervieweeOneName);
+		getContentPane().add(intervieweeOneInfo);
+		getContentPane().add(intervieweeOneButton);
+		
+		getContentPane().add(intervieweeTwoName);
+		getContentPane().add(intervieweeTwoInfo);
+		getContentPane().add(intervieweeTwoButton);
+		
+		getContentPane().add(intervieweeThreeName);
+		getContentPane().add(intervieweeThreeInfo);
+		getContentPane().add(intervieweeThreeButton);
+		
+		getContentPane().add(intervieweeFourName);
+		getContentPane().add(intervieweeFourInfo);
+		getContentPane().add(intervieweeFourButton);
+	}
 }
+

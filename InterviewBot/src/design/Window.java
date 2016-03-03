@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -19,6 +20,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 
 /**
  * Images link: http://www.flaticon.com/free-icon/right-arrow_8767
@@ -48,7 +50,8 @@ public class Window extends JApplet {
 	intervieweeTwoName, intervieweeTwoInfo, intervieweeThreeName, intervieweeThreeInfo,
 	intervieweeFourName, intervieweeFourInfo;
 	
-	private JButton intervieweeOneButton, intervieweeTwoButton, intervieweeThreeButton, intervieweeFourButton;
+	private JButton intervieweeOneButton, intervieweeTwoButton, intervieweeThreeButton, 
+	intervieweeFourButton, backArrow, menuButton, settingsButton;
 	
 	
 	private static HashMap<String, String> data = new HashMap<String, String>();
@@ -62,7 +65,6 @@ public class Window extends JApplet {
 	
 	public Window() {
 		panel = new JPanel();
-		setContentPane(new JLabel(new ImageIcon("../images/login/loginBackground.png")));
 		
 		
 		final JTextArea textArea = new JTextArea();
@@ -80,8 +82,6 @@ public class Window extends JApplet {
 	    textArea.setForeground(Color.WHITE);
 	    
 	    loadLogin();
-	    loadListeners();
-	    addLoginContentToPane();
 	}
 	
 	private void loadIntervieweeMenu() {
@@ -209,7 +209,38 @@ public class Window extends JApplet {
 		    }
 		});
 		
+		
+		/**
+		 * BackArrow
+		 */
+		backArrow = new JButton();
+		backArrow.setIcon(new ImageIcon("../images/login/backArrow.png"));
+		backArrow.setBounds(25, 446, 24, 24);
+		backArrow.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		backArrow.setBorder(null);
+		
+		
+		/**
+		 * Settings Button
+		 */
+		settingsButton = new JButton();
+		settingsButton.setIcon(new ImageIcon("../images/login/settings.png"));
+		settingsButton.setBounds(275, 446, 24, 24);
+		settingsButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		settingsButton.setBorder(null);
+		
+		/**
+		 * Menu Button
+		 */
+		menuButton = new JButton();
+		menuButton.setIcon(new ImageIcon("../images/login/menu.png"));
+		menuButton.setBounds(18, 13, 24, 24);
+		menuButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		menuButton.setBorder(null);
+		
+		
 		addIntervieweeContentToPane();
+		loadIntervieweeListeners();
 	}
 	
 	
@@ -259,15 +290,32 @@ public class Window extends JApplet {
 		passwordButton.setBounds(85, 380, 150, 20);
 		passwordButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		passwordButton.setBorder(null);
+		
+		setContentPane(new JLabel(new ImageIcon("../images/login/loginBackground.png")));
+		getContentPane().revalidate();
+		getContentPane().repaint();
+		
+	    loadLoginListeners();
+	    addLoginContentToPane();
 	}
 	
-	private void loadListeners() {
-		login.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				loadIntervieweeMenu();
-			}
-		});
+	private void loadChat() {
+		setContentPane(new JLabel(new ImageIcon("../images/chat/chatMenu.png")));
+		getContentPane().revalidate();
+		getContentPane().repaint();
+		
+		ChatPane cPane = new ChatPane();
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(0, 55, 320, 320);
+		scrollPane.setOpaque(false);
+	    scrollPane.getViewport().setOpaque(false);
+	    scrollPane.setBorder(null);
+	    scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+	    scrollPane.setViewportView(cPane);
+		
+		
+		getContentPane().add(scrollPane);
+		
 	}
 	
 	private void addLoginContentToPane() {
@@ -298,6 +346,78 @@ public class Window extends JApplet {
 		getContentPane().add(intervieweeFourName);
 		getContentPane().add(intervieweeFourInfo);
 		getContentPane().add(intervieweeFourButton);
+		
+		getContentPane().add(backArrow);
+		getContentPane().add(menuButton);
+		getContentPane().add(settingsButton);
+	}
+	
+	private void loadLoginListeners() {
+		login.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadIntervieweeMenu();
+			}
+		});
+	}
+	
+	private void loadIntervieweeListeners() {	
+		backArrow.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadLogin();
+			}
+		});
+		
+		intervieweeOneButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadChat();
+			}
+		});
+	}
+	
+	
+	public class ChatPane extends JPanel {
+		
+		private ArrayList<JTextArea> messages = new ArrayList<JTextArea>();
+
+        public ChatPane() {
+        	
+        	setLayout(null);
+        	setOpaque(false);
+        	setPreferredSize(new Dimension(310, 20000));
+        	
+        	int messagesAmt = 0;
+            
+        	for (int i = 0; i < 100; i++) {
+        		messages.add(new JTextArea(i + " - NAME: I think that is a wonderful answer my friend!"));
+        		
+        	}
+        	
+        	for (int i = 0; i < messages.size(); i++) {
+        		JTextArea messageBefore = i == 0 ? messages.get(i) : messages.get(i-1);
+        		JTextArea textArea = messages.get(i);
+        		if (messagesAmt % 2 == 0) {
+        			textArea.setBounds(60, (messageBefore.getHeight() + 5) * messagesAmt, 250, 50);
+        		} else {
+        			textArea.setBounds(5, (messageBefore.getHeight() + 5) * messagesAmt, 250, 50);
+        		}
+        		textArea.setLineWrap(true);
+        		textArea.setWrapStyleWord(true);
+        		textArea.setForeground(Color.LIGHT_GRAY);
+        		textArea.setEditable(false);
+        		textArea.setBackground(new Color(31, 51, 77));
+        		Border border = BorderFactory.createLineBorder(new Color(31, 51, 77), 10);
+        		textArea.setBorder(border);
+        		textArea.setSize(250, (int) textArea.getPreferredSize().getHeight());
+        		add(textArea);
+        		messagesAmt++;
+        	}
+        	
+
+    		
+        }
 	}
 }
 
