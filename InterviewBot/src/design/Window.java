@@ -1,11 +1,18 @@
 package design;
 
+import java.applet.AudioClip;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,6 +29,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+import message.Message;
+import user.Account;
+import utils.DataReader;
+import utils.KeywordReader;
+
 /**
  * Images link: http://www.flaticon.com/free-icon/right-arrow_8767
  * @author Alex
@@ -32,6 +44,7 @@ public class Window extends JApplet {
 		
 	public static final long serialVersionUID = -2803431175048406077L;
 	public JPanel panel;
+	private Account account = new Account("Test", "Test");
 	
 	/**
 	 * LOGIN MENU
@@ -52,6 +65,12 @@ public class Window extends JApplet {
 	
 	private JButton intervieweeOneButton, intervieweeTwoButton, intervieweeThreeButton, 
 	intervieweeFourButton, backArrow, menuButton, settingsButton;
+	
+	/**
+	 * ChatScreen
+	 */
+	private JButton send;
+	private JTextArea sendMessage;
 	
 	
 	private static HashMap<String, String> data = new HashMap<String, String>();
@@ -80,6 +99,9 @@ public class Window extends JApplet {
 	    scroll.setBorder(null);
 	    scroll.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
 	    textArea.setForeground(Color.WHITE);
+	    
+	    data = DataReader.init();
+	    keywords = KeywordReader.init();
 	    
 	    loadLogin();
 	}
@@ -312,9 +334,36 @@ public class Window extends JApplet {
 	    scrollPane.setBorder(null);
 	    scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
 	    scrollPane.setViewportView(cPane);
+	    
+	    send = new JButton("SEND");
+	    send.setBounds(255, 400, 50, 20);
+		send.setForeground(Color.LIGHT_GRAY);
+		send.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		send.setBorder(null);
+		send.setFont(new Font(send.getFont().getName(), Font.PLAIN, 16));
 		
+		sendMessage = new JTextArea();
+		sendMessage.setBounds(20, 385, 200, 40);
+		sendMessage.setForeground(Color.LIGHT_GRAY);
+		sendMessage.setCaretColor(Color.LIGHT_GRAY);
+		GhostText sendMessageGhost = new GhostText(sendMessage, "Type message..");
+		sendMessage.setOpaque(false);
+		sendMessage.setBorder(null);
+		sendMessage.setLineWrap(true);
+		sendMessage.setWrapStyleWord(true);
 		
+		JScrollPane sendMessageScroll = new JScrollPane(sendMessage);
+		sendMessageScroll.setBounds(20, 385, 200, 40);
+		sendMessageScroll.setOpaque(false);
+		sendMessageScroll.setBorder(null);
+		sendMessageScroll.getViewport().setOpaque(false);
+		sendMessageScroll.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+		
+		getContentPane().add(send);
+		getContentPane().add(sendMessageScroll);
 		getContentPane().add(scrollPane);
+		
+		loadSendListeners();
 		
 	}
 	
@@ -361,6 +410,35 @@ public class Window extends JApplet {
 		});
 	}
 	
+	private void loadSendListeners() {
+		send.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				submitMessage();
+			}
+		});
+		
+		sendMessage.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+				    e.consume();
+				    submitMessage();
+				}	
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			
+			}
+		});
+	}
+	
 	private void loadIntervieweeListeners() {	
 		backArrow.addActionListener(new ActionListener() {
 			@Override
@@ -377,6 +455,52 @@ public class Window extends JApplet {
 		});
 	}
 	
+	private void submitMessage() {
+		AudioClip responseAudio;
+		if (sendMessage.getText().equalsIgnoreCase("Type message..") || sendMessage.getText().equalsIgnoreCase("")) {
+			return;
+		} else {
+			account.getMessages().add(new Message(sendMessage.getText(), account, false));
+			String question = sendMessage.getText();
+			String phrase = "";
+			for (String keyword : question.split(" ")) {
+				for (String key_words : keywords) {
+					if (keyword.equalsIgnoreCase(key_words)) {
+			 			phrase += keyword;
+					}
+				}
+			}
+			System.out.println(phrase);
+			if (data.containsKey(phrase))
+				account.getMessages().add(new Message(data.get(phrase), account, true));
+			else 
+				account.getMessages().add(new Message("I don't understand, sorry.", account, true));
+			
+			
+			System.out.println("ADDING: " + sendMessage.getText());
+			/** 
+			 * MOCK AUDIO SYSTEM
+			 */
+			File folder = new File("../audio/");
+			try {
+				String path = folder.getCanonicalPath().toString() + "/";
+				responseAudio = getAudioClip(new URL("file://" + path), "test.wav");
+				if (responseAudio == null)
+					System.out.println("Audio null");
+				responseAudio.play();
+				System.out.println(new URL("file://" + path).getFile() + "/test.wav");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			/**
+			 * END
+			 */
+			
+			
+			loadChat();
+		}
+	}
+	
 	
 	public class ChatPane extends JPanel {
 		
@@ -387,21 +511,21 @@ public class Window extends JApplet {
         	setLayout(null);
         	setOpaque(false);
         	setPreferredSize(new Dimension(310, 20000));
-        	
-        	int messagesAmt = 0;
             
-        	for (int i = 0; i < 100; i++) {
-        		messages.add(new JTextArea(i + " - NAME: I think that is a wonderful answer my friend!"));
-        		
+        	for (int i = 0; i < account.getMessages().size(); i++) {
+        		messages.add(new JTextArea(account.getMessages().get(i).getMessage()));
         	}
         	
         	for (int i = 0; i < messages.size(); i++) {
         		JTextArea messageBefore = i == 0 ? messages.get(i) : messages.get(i-1);
         		JTextArea textArea = messages.get(i);
-        		if (messagesAmt % 2 == 0) {
-        			textArea.setBounds(60, (messageBefore.getHeight() + 5) * messagesAmt, 250, 50);
+        		Message message = account.getMessages().get(i);
+        		if (!message.isResponse()) {
+        			textArea.setBounds(60, (messageBefore.getY() + messageBefore.getHeight() + 5), 250, 50);
+        			System.out.println("1: " + (messageBefore.getY()  + messageBefore.getHeight() + 5));
         		} else {
-        			textArea.setBounds(5, (messageBefore.getHeight() + 5) * messagesAmt, 250, 50);
+        			textArea.setBounds(5, (messageBefore.getY()  + messageBefore.getHeight() + 5), 250, 50);
+        			System.out.println("2: " + (messageBefore.getY()  + messageBefore.getHeight() + 5));
         		}
         		textArea.setLineWrap(true);
         		textArea.setWrapStyleWord(true);
@@ -412,7 +536,6 @@ public class Window extends JApplet {
         		textArea.setBorder(border);
         		textArea.setSize(250, (int) textArea.getPreferredSize().getHeight());
         		add(textArea);
-        		messagesAmt++;
         	}
         	
 
