@@ -1,12 +1,14 @@
 package user;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import message.Message;
 
-public class Account {
+public class Account implements Serializable {
 
-	
+	private static final long serialVersionUID = -5514967721055766775L;
+
 	private String username, password, email;
 	
 	private ArrayList<Message> messages = new ArrayList<Message>();
