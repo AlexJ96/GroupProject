@@ -11,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import javax.swing.border.Border;
 
 import message.Message;
 import user.Account;
+import user.AccountManager;
 import utils.DataReader;
 import utils.KeywordReader;
 
@@ -44,7 +44,7 @@ public class Window extends JApplet {
 		
 	public static final long serialVersionUID = -2803431175048406077L;
 	public JPanel panel;
-	private Account account = new Account("Test", "Test");
+	private Account account;
 	
 	/**
 	 * LOGIN MENU
@@ -231,36 +231,7 @@ public class Window extends JApplet {
 		    }
 		});
 		
-		
-		/**
-		 * BackArrow
-		 */
-		backArrow = new JButton();
-		backArrow.setIcon(new ImageIcon("../images/login/backArrow.png"));
-		backArrow.setBounds(25, 446, 24, 24);
-		backArrow.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		backArrow.setBorder(null);
-		
-		
-		/**
-		 * Settings Button
-		 */
-		settingsButton = new JButton();
-		settingsButton.setIcon(new ImageIcon("../images/login/settings.png"));
-		settingsButton.setBounds(275, 446, 24, 24);
-		settingsButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		settingsButton.setBorder(null);
-		
-		/**
-		 * Menu Button
-		 */
-		menuButton = new JButton();
-		menuButton.setIcon(new ImageIcon("../images/login/menu.png"));
-		menuButton.setBounds(18, 13, 24, 24);
-		menuButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		menuButton.setBorder(null);
-		
-		
+		addInterfaceButtons();
 		addIntervieweeContentToPane();
 		loadIntervieweeListeners();
 	}
@@ -359,9 +330,14 @@ public class Window extends JApplet {
 		sendMessageScroll.getViewport().setOpaque(false);
 		sendMessageScroll.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
 		
+		addInterfaceButtons();
+		
 		getContentPane().add(send);
 		getContentPane().add(sendMessageScroll);
 		getContentPane().add(scrollPane);
+		getContentPane().add(backArrow);
+		getContentPane().add(menuButton);
+		getContentPane().add(settingsButton);
 		
 		loadSendListeners();
 		
@@ -375,6 +351,36 @@ public class Window extends JApplet {
 		getContentPane().add(passwordButton);
 		getContentPane().add(login);
 		getContentPane().add(panel);
+	}
+	
+	private void addInterfaceButtons() {
+		/**
+		 * BackArrow
+		 */
+		backArrow = new JButton();
+		backArrow.setIcon(new ImageIcon("../images/login/backArrow.png"));
+		backArrow.setBounds(25, 446, 24, 24);
+		backArrow.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		backArrow.setBorder(null);
+		
+		
+		/**
+		 * Settings Button
+		 */
+		settingsButton = new JButton();
+		settingsButton.setIcon(new ImageIcon("../images/login/settings.png"));
+		settingsButton.setBounds(275, 446, 24, 24);
+		settingsButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		settingsButton.setBorder(null);
+		
+		/**
+		 * Menu Button
+		 */
+		menuButton = new JButton();
+		menuButton.setIcon(new ImageIcon("../images/login/menu.png"));
+		menuButton.setBounds(18, 13, 24, 24);
+		menuButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		menuButton.setBorder(null);
 	}
 	
 	private void addIntervieweeContentToPane() {
@@ -405,7 +411,19 @@ public class Window extends JApplet {
 		login.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				loadIntervieweeMenu();
+				if (username.getText().isEmpty() || password.getPassword().toString().isEmpty() || username.getText().equalsIgnoreCase("username") || password.getPassword().toString().equalsIgnoreCase("password"))
+					return;
+				if (AccountManager.containsAccount(username.getText())) {
+					account = AccountManager.loadAccount(username.getText());
+					if (account.getPassword().equalsIgnoreCase(String.valueOf(password.getPassword())))
+						loadIntervieweeMenu();
+					else
+						System.out.println(username.getText() + " " + String.valueOf(password.getPassword()) + " Wrong password");
+				} else {
+					account = new Account(username.getText(), String.valueOf(password.getPassword()));
+					AccountManager.savePlayer(account);
+					loadIntervieweeMenu();
+				}
 			}
 		});
 	}
@@ -415,6 +433,13 @@ public class Window extends JApplet {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				submitMessage();
+			}
+		});
+		
+		backArrow.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadIntervieweeMenu();
 			}
 		});
 		
@@ -487,8 +512,7 @@ public class Window extends JApplet {
 				responseAudio = getAudioClip(new URL("file://" + path), "test.wav");
 				if (responseAudio == null)
 					System.out.println("Audio null");
-				responseAudio.play();
-				System.out.println(new URL("file://" + path).getFile() + "/test.wav");
+				//CODE TO PLAY //responseAudio.play();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -504,6 +528,7 @@ public class Window extends JApplet {
 	
 	public class ChatPane extends JPanel {
 		
+		private static final long serialVersionUID = 1L;
 		private ArrayList<JTextArea> messages = new ArrayList<JTextArea>();
 
         public ChatPane() {
