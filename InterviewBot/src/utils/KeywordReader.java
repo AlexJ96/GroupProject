@@ -20,7 +20,7 @@ public class KeywordReader {
 					return keywords;
 				}
 				keywords.add(line);
-				System.out.println("Added " + line);
+				//System.out.println("Added " + line);
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println(e.getMessage());
