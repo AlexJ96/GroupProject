@@ -1,0 +1,13 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Digits Grammar for Hello World example
+ */
+
+grammar test;
+
+public <options> = <hello> | <bye> | <mate>;
+
+<hello> = hello how are you;
+<bye> = bye;
+<mate> = mate;

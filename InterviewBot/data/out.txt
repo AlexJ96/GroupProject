@@ -1,0 +1,22 @@
+Hey - Hey
+Hey - Hi
+Hey - Hello
+Hi - Hey
+Hi - Hello
+Hi - Hi
+Hello - Hello
+Hello - Hey
+Hello - Hi
+How are you? - I'm good thanks.
+How you doing? - I'm doing well thank you.
+How are you? - I'm not bad thank you.
+How are you? - I'm good thank you.
+How are you? - I'm very well thanks for asking, how about you?
+Goodbye - Goodbye
+Bye - Bye
+Cya - Cya
+Thankyou - You're welcome
+Thanks - No problem
+Thank you - No problem
+Thank you - You're welcome
+Thanks - You're welcome.
